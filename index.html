@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ckb" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>مکعب شیشه‌ای با شعر کوردی</title>
+<style>
+  :root{ --s: min(480px, 80vmin); }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    display:grid; place-items:center; overflow:hidden;
+    background:radial-gradient(1200px 800px at 25% 15%, #1d3b63 0%, #0b1626 45%, #04070d 100%);
+    font-family:"Vazirmatn","Noto Naskh Arabic","Segoe UI",Tahoma,sans-serif;
+  }
+  body::before,body::after{content:"";position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;}
+  body::before{width:46vmin;height:46vmin;background:rgba(56,150,255,.45);top:6%;left:8%;}
+  body::after {width:42vmin;height:42vmin;background:rgba(168,85,247,.35);bottom:4%;right:8%;}
+
+  .scene{perspective:1100px;perspective-origin:50% 42%;}
+  .cube{
+    position:relative;width:var(--s);height:var(--s);
+    transform-style:preserve-3d;
+    animation:sway 20s ease-in-out infinite;
+  }
+  @keyframes sway{
+    0%,100%{transform:rotateX(-13deg) rotateY(-21deg);}
+    50%    {transform:rotateX(7deg)   rotateY(19deg);}
+  }
+
+  /* ---------- تصویر در لایهٔ داخلی، روبروی وجه جلویی ---------- */
+  .inner-art{
+    position:absolute;
+    inset:14%;
+    border-radius:14px;
+    overflow:hidden;
+    pointer-events:none;
+    transform:translateZ(calc(var(--s) * -0.5 + 28px)); /* نزدیک وجه پشتی، داخل مکعب */
+    box-shadow:
+      inset 0 0 30px rgba(255,255,255,.18),
+      0 0 35px rgba(120,190,255,.28);
+    opacity:.62;
+    filter:saturate(1.08) contrast(1.04);
+  }
+  .inner-art img{
+    width:100%;height:100%;
+    object-fit:cover;
+    display:block;
+    border-radius:inherit;
+  }
+
+  /* ---------- وجه‌های شیشه‌ای ---------- */
+  .face{
+    position:absolute;inset:0;border-radius:16px;
+    border:1px solid rgba(255,255,255,.38);
+    background:linear-gradient(135deg,
+      rgba(255,255,255,.24) 0%,
+      rgba(255,255,255,.06) 35%,
+      rgba(255,255,255,.02) 62%,
+      rgba(255,255,255,.16) 100%);
+    box-shadow:
+      inset 0 0 70px rgba(255,255,255,.16),
+      inset 0 0 14px rgba(255,255,255,.28),
+      0 0 45px rgba(80,170,255,.35),
+      0 0 90px rgba(80,170,255,.18);
+    -webkit-backdrop-filter:blur(3px);
+    backdrop-filter:blur(3px);
+  }
+  .face::after{
+    content:"";position:absolute;inset:0;border-radius:inherit;
+    background:linear-gradient(118deg,
+      rgba(255,255,255,.5) 0%,
+      rgba(255,255,255,0) 24%,
+      rgba(255,255,255,0) 72%,
+      rgba(255,255,255,.2) 100%);
+    mix-blend-mode:screen;opacity:.75;pointer-events:none;
+  }
+
+  .front {transform:translateZ(calc(var(--s)/2));}
+  .back  {transform:rotateY(180deg) translateZ(calc(var(--s)/2));}
+  .right {transform:rotateY(90deg)  translateZ(calc(var(--s)/2));}
+  .left  {transform:rotateY(-90deg) translateZ(calc(var(--s)/2));}
+  .top   {transform:rotateX(90deg)  translateZ(calc(var(--s)/2));}
+  .bottom{transform:rotateX(-90deg) translateZ(calc(var(--s)/2));}
+
+  /* ---------- متن روی وجه جلویی ---------- */
+  .poem{position:absolute;inset:0;direction:rtl;transform:translateZ(2px);pointer-events:none;}
+  .line{
+    position:absolute;inset:8% 7%;
+    display:flex;flex-wrap:wrap;align-content:center;align-items:center;justify-content:center;
+    gap:0 .35em;text-align:center;
+    font-size:clamp(15px,3.2vmin,22px);
+    font-weight:600;line-height:1.9;color:#fff;
+    text-shadow:0 0 10px rgba(160,215,255,.9),0 0 28px rgba(110,175,255,.6);
+  }
+  .word{display:inline-block;opacity:0;will-change:opacity,transform,filter;}
+
+  .sound-btn{
+    position:fixed;bottom:16px;left:16px;z-index:10;
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.35);
+    color:#eaf4ff;border-radius:999px;
+    padding:8px 14px;font:inherit;font-size:13px;cursor:pointer;
+    backdrop-filter:blur(6px);
+  }
+  .sound-btn:hover{background:rgba(255,255,255,.22);}
+</style>
+</head>
+<body>
+
+  <!-- موسیقی پس‌زمینه -->
+  <audio id="bgm" src="https://cdn.imgurl.ir/uploads/t316160_.mp3" loop preload="auto"></audio>
+  <button class="sound-btn" id="soundBtn" type="button">🔊 صدا روشن</button>
+
+  <div class="scene">
+    <div class="cube">
+
+      <!-- لایهٔ داخلی: تصویر -->
+      <div class="inner-art">
+        <img
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlCAJiEG0mEDzDlfoOfg6KVeUKjOsnpA1dxkLugOgrKy-7kVIafT2mkvw&amp;s"
+          alt=""
+          onerror="this.style.display='none'"
+        />
+      </div>
+
+      <div class="face front"><div class="poem" id="poem"></div></div>
+      <div class="face back"></div>
+      <div class="face right"></div>
+      <div class="face left"></div>
+      <div class="face top"></div>
+      <div class="face bottom"></div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  /* ---------- موسیقی ---------- */
+  const bgm = document.getElementById('bgm');
+  const btn = document.getElementById('soundBtn');
+  bgm.volume = 0.35;
+
+  function setBtn(){
+    btn.textContent = (bgm.muted || bgm.paused) ? '🔇 صدا خاموش' : '🔊 صدا روشن';
+  }
+
+  const tryAutoplay = () => {
+    bgm.muted = false;
+    const p = bgm.play();
+    if (p && p.catch) {
+      p.catch(() => {
+        bgm.muted = true;
+        bgm.play().catch(()=>{});
+      });
+    }
+  };
+  tryAutoplay();
+  setBtn();
+
+  const unlock = () => {
+    bgm.muted = false;
+    bgm.play().catch(()=>{});
+    setBtn();
+    ['pointerdown','keydown','touchstart'].forEach(ev =>
+      document.removeEventListener(ev, unlock)
+    );
+  };
+  ['pointerdown','keydown','touchstart'].forEach(ev =>
+    document.addEventListener(ev, unlock, { passive: true })
+  );
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (bgm.paused || bgm.muted) {
+      bgm.muted = false;
+      bgm.play().catch(()=>{});
+    } else {
+      bgm.muted = true;
+    }
+    setBtn();
+  });
+
+  /* ---------- شعر ---------- */
+  const LINES = [
+    "چاوەکەم چاوەکەم زانیوتە بۆچی خەو لە چاوم ناکەوێ",
+    "چاوەکەم زانیوتە بۆچی خەو لە چاوم ناکەوێ",
+    "چونکە من پێشخزمەتم پێشخزمەتان نان و نشەوێ",
+    "ڕۆژ و شەو دایم ڕۆژ و شەو دایم لەبەر دیدەی خەیاڵم حاضری",
+    "سا چ فرقییەکی هەیە بۆ من ئیتر ئێرە و ئەوێ بەس نییە",
+    "لێرە دەوێرم جار بە جار باسِت بکەم نەمدەوێرا قەت لەبەر ئەغیار کەناوت بەملەوێ",
+    "دڵ لەبەر زامی فراقت دایمەن زاری دەکا",
+    "دڵ لەبەر زامی فراقت دایمەن زاری دەکا",
+    "ڕۆژ بە ڕۆژ مەنعیدەکەم باز دردی سەختە و ناسرەوێ",
+    "عەقڵ و هۆشم داوەپێت لێشی دەتۆری ماڵوێران",
+    "دەوڵەتێکی مەفت و بێ ساحیبە بۆچی ناتەوێ",
+    "گەر مخەیەر بم لە ما بەینی بەهەشت و وەصلی یار",
+    "وەصلی تۆ بۆ من جەهەننەم پڕ لە جەننت نامەوێ",
+    "ئەی ڕەقیب ئەی ڕەقیب وێڵەم لە دەستت لێرە بۆ لێم ناگەڕی",
+    "باو کە کوشتەت نیم ئەرێ ئەی بێ مەزهەب چیت لێم دەوێ",
+    "هەر وەکوو کوهی دەماوەند سەرم پڕ شورشە",
+    "قەت هەمی حوجران و غەم ساتی لە دوری نارەوێ",
+    "گردنی کوردی گردنی کوردی لە کێوی بێ ستون محکەمترا",
+    "چونکە سەت ساڵە لە ژێر باری خەمایە و نانەوێ"
+  ];
+
+  const LINE_MS = 7000;
+  const FADE_MS = 520;
+  const OUT_MS  = 450;
+  const LEAD_MS = 260;
+  const TOTAL_MS = LINES.length * LINE_MS;
+  const poemEl = document.getElementById('poem');
+  const rules = [];
+  let uid = 0;
+
+  LINES.forEach((line, li) => {
+    const words = line.trim().split(/\s+/).filter(Boolean);
+    const n = words.length;
+    const lineStart = li * LINE_MS;
+    const spread = Math.max(0, LINE_MS - (LEAD_MS + FADE_MS + OUT_MS));
+    const step = n > 1 ? spread / (n - 1) : 0;
+
+    const lineEl = document.createElement('div');
+    lineEl.className = 'line';
+
+    words.forEach((w, i) => {
+      const tIn = lineStart + i * step;
+      const tInEnd = tIn + FADE_MS;
+      const tOut = lineStart + LINE_MS - OUT_MS;
+      const tOutEnd = lineStart + LINE_MS;
+      const pct = t => ((t / TOTAL_MS) * 100).toFixed(4);
+      const name = 'kf' + (uid++);
+
+      rules.push(
+        `@keyframes ${name}{` +
+        `0%{opacity:0;transform:translateY(12px) scale(.9);filter:blur(7px);}` +
+        `${pct(tIn)}%{opacity:0;transform:translateY(12px) scale(.9);filter:blur(7px);}` +
+        `${pct(tInEnd)}%{opacity:1;transform:translateY(0) scale(1);filter:blur(0);}` +
+        `${pct(tOut)}%{opacity:1;transform:translateY(0) scale(1);filter:blur(0);}` +
+        `${pct(tOutEnd)}%{opacity:0;transform:translateY(-12px) scale(.96);filter:blur(7px);}` +
+        `100%{opacity:0;transform:translateY(-12px) scale(.96);filter:blur(7px);}` +
+        `}`
+      );
+
+      const span = document.createElement('span');
+      span.className = 'word';
+      span.textContent = w;
+      span.style.animation = `${name} ${TOTAL_MS}ms linear infinite both`;
+      lineEl.appendChild(span);
+    });
+
+    poemEl.appendChild(lineEl);
+  });
+
+  const style = document.createElement('style');
+  style.textContent = rules.join('\n');
+  document.head.appendChild(style);
+})();
+</script>
+</body>
+</html>
